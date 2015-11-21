@@ -65,11 +65,17 @@ describe UrlsController, type: :controller do
 
       context 'when the slug has already been taken' do
         let(:expected_json) do
-          { error: { message: "#{slug} has already been taken" } }.to_json
+          {
+            error: {
+              message: "Slug has already been taken: \"#{slug}\""
+            }
+          }.to_json
         end
 
         before do
-          allow(repository).to receive(:save).and_return(nil)
+          allow(repository).to receive(:save).and_raise(
+            Urls::Repository::SlugAlreadyTaken, slug
+          )
         end
 
         it { is_expected.to have_http_status(409) }

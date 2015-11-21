@@ -6,6 +6,13 @@ module Urls
     TARGET_URL_KEY = "#{URL_PREFIX}:target_url".freeze
     RADIX = 35
 
+    SlugAlreadyTaken = Class.new(StandardError) do
+      def initialize(slug)
+        message = "Slug has already been taken: \"#{slug}\""
+        super(message)
+      end
+    end
+
     def initialize(
       connection_pool: Rails.configuration.redis_pool, env: Rails.env
     )
@@ -21,7 +28,9 @@ module Urls
     def save(target_url:, slug: nil)
       slug = next_slug if slug.blank?
 
-      save_target_url(slug, target_url) && to_url(slug, target_url)
+      fail(SlugAlreadyTaken, slug) unless save_target_url(slug, target_url)
+
+      to_url(slug, target_url)
     end
 
     private

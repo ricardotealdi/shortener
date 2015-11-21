@@ -8,11 +8,8 @@ class UrlsController < ApplicationController
 
   def create
     @url = repository.save(**create_params)
-    if @url
-      render(json: resource, status: 201, location: slug_location)
-    else
-      render(json: error_resource, status: 409)
-    end
+
+    render(json: resource, status: 201, location: slug_location)
   end
 
   private
@@ -25,18 +22,13 @@ class UrlsController < ApplicationController
     @url.as_json.merge(self: slug_location)
   end
 
-  def error_resource
-    { error: { message: "#{create_params[:slug]} has already been taken" } }
-  end
-
   def slug_location
     @slug_url ||= slug_url(@url.slug)
   end
 
   def create_params
-    params.permit(:target_url, :slug).inject({}) do |acc, (k, v)|
-      acc[k] = v.to_s.chomp
-      acc
-    end.symbolize_keys
+    params.permit(:target_url, :slug).each_with_object({}) do |(key, val), hash|
+      hash[key.to_sym] = val.to_s.chomp
+    end
   end
 end

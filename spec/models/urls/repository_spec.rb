@@ -116,7 +116,9 @@ describe Urls::Repository do
       context 'and the slug already exists' do
         before { redis_pool.with { |redis| redis.set(redis_key, target_url) } }
 
-        it { is_expected.to be_falsey }
+        it 'raises an error' do
+          expect { save }.to raise_error(Urls::Repository::SlugAlreadyTaken)
+        end
       end
     end
   end
