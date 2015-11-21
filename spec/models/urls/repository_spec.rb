@@ -95,8 +95,9 @@ describe Urls::Repository do
     end
 
     context 'when a slug is passed' do
-      let(:slug) { 'my-slug' }
-      let(:expected_slug) { slug }
+      let(:slug) { 'My Slug' }
+      let(:hex_slug) { slug.parameterize.unpack('H*').first }
+      let(:expected_slug) { slug.parameterize }
 
       it { is_expected.to be_a(Url) }
 
@@ -105,7 +106,7 @@ describe Urls::Repository do
       end
 
       it '#slug' do
-        expect(save.slug).to eq(slug)
+        expect(save.slug).to eq(expected_slug)
       end
 
       it 'creates a slug' do

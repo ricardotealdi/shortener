@@ -26,7 +26,7 @@ module Urls
     end
 
     def save(target_url:, slug: nil)
-      slug = next_slug if slug.blank?
+      slug = slug.blank? ? next_slug : slug.parameterize
 
       fail(SlugAlreadyTaken, slug) unless save_target_url(slug, target_url)
 
