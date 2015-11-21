@@ -10,9 +10,10 @@ describe Urls::Repository do
     let(:redis_key) { "url:#{hex_slug}:target_url" }
     let(:redis_pool) { Rails.configuration.redis_pool }
 
+    after { redis_pool.with { |redis| redis.del(redis_key) } }
+
     context 'when there is a url' do
       before { redis_pool.with { |redis| redis.set(redis_key, target_url) } }
-      after { redis_pool.with { |redis| redis.del(redis_key) } }
 
       it { is_expected.to be_a(Url) }
 
@@ -23,6 +24,10 @@ describe Urls::Repository do
       it '#target_url' do
         expect(find.slug).to eq(slug)
       end
+    end
+
+    context 'when there isn\'t any url' do
+      it { is_expected.to be(nil) }
     end
   end
 end
