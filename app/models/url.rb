@@ -1,2 +1,1 @@
-Url = Struct.new(:slug, :target_url) do
-end
+Url = Struct.new(:slug, :target_url)
