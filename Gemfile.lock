@@ -42,6 +42,7 @@ GEM
     coderay (1.1.0)
     connection_pool (2.2.0)
     diff-lcs (1.2.5)
+    docile (1.1.5)
     erubis (2.7.0)
     globalid (0.3.6)
       activesupport (>= 4.1.0)
@@ -116,6 +117,11 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    simplecov (0.10.0)
+      docile (~> 1.1.0)
+      json (~> 1.8)
+      simplecov-html (~> 0.10.0)
+    simplecov-html (0.10.0)
     slop (3.6.0)
     spring (1.4.4)
     sprockets (3.4.0)
@@ -140,6 +146,7 @@ DEPENDENCIES
   redis (~> 3.2.2)
   rspec-rails (~> 3.4.0)
   sdoc (~> 0.4.0)
+  simplecov (~> 0.10.0)
   spring
 
 BUNDLED WITH

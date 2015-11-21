@@ -11,6 +11,7 @@ gem 'puma', '~> 2.15.3'
 group :development, :test do
   gem 'pry-byebug'
   gem 'rspec-rails', '~> 3.4.0'
+  gem 'simplecov', '~> 0.10.0'
 end
 
 group :development do
