@@ -18,10 +18,10 @@ module Urls
       target_url && to_url(slug, target_url)
     end
 
-    def save(url)
-      url.slug = next_slug if url.slug.blank?
+    def save(target_url:, slug: nil)
+      slug = next_slug if slug.blank?
 
-      save_target_url(url.slug, url.target_url)
+      save_target_url(slug, target_url) && to_url(slug, target_url)
     end
 
     private

@@ -27,7 +27,7 @@ describe Urls::Repository do
         expect(find.target_url).to eq(target_url)
       end
 
-      it '#target_url' do
+      it '#slug' do
         expect(find.slug).to eq(slug)
       end
     end
@@ -38,9 +38,8 @@ describe Urls::Repository do
   end
 
   describe '#save' do
-    subject(:save) { repository.save(url) }
+    subject(:save) { repository.save(target_url: target_url, slug: slug) }
 
-    let(:url) { Url.new(slug, target_url) }
     let(:target_url) { 'http://domain.tld' }
     let(:slug_counter_key) { 'shortener:test:url:nextslug' }
     let(:hex_slug) { slug.unpack('H*').first }
@@ -58,14 +57,18 @@ describe Urls::Repository do
       let(:slug) { '' }
       let(:expected_slug) { '1' }
 
-      it { is_expected.to be_truthy }
+      it { is_expected.to be_a(Url) }
+
+      it '#target_url' do
+        expect(save.target_url).to eq(target_url)
+      end
+
+      it '#slug' do
+        expect(save.slug).to eq(expected_slug)
+      end
 
       it 'creates a slug' do
         expect { save }.to change(&expected_target_url).from(nil).to(target_url)
-      end
-
-      it 'changes the slug value in url' do
-        expect { save }.to change { url.slug }.from(slug).to(expected_slug)
       end
 
       context 'and the generated slug already exists' do
@@ -74,15 +77,19 @@ describe Urls::Repository do
 
         before { redis_pool.with { |redis| redis.set(redis_key, target_url) } }
 
-        it { is_expected.to be_truthy }
+        it { is_expected.to be_a(Url) }
+
+        it '#target_url' do
+          expect(save.target_url).to eq(target_url)
+        end
+
+        it '#slug' do
+          expect(save.slug).to eq(expected_slug)
+        end
 
         it 'creates a slug' do
           expect { save }.to change(&expected_target_url).
             from(nil).to(target_url)
-        end
-
-        it 'changes the slug value in url' do
-          expect { save }.to change { url.slug }.from(slug).to(expected_slug)
         end
       end
     end
@@ -91,15 +98,19 @@ describe Urls::Repository do
       let(:slug) { 'my-slug' }
       let(:expected_slug) { slug }
 
-      it { is_expected.to be_truthy }
+      it { is_expected.to be_a(Url) }
+
+      it '#target_url' do
+        expect(save.target_url).to eq(target_url)
+      end
+
+      it '#slug' do
+        expect(save.slug).to eq(slug)
+      end
 
       it 'creates a slug' do
         expect { save }.to change(&expected_target_url).
           from(nil).to(target_url)
-      end
-
-      it 'does not change the slug value in url' do
-        expect { save }.to_not change { url.slug }
       end
 
       context 'and the slug already exists' do
