@@ -44,11 +44,14 @@ module Urls
 
     def next_slug
       redis_connection do |redis|
+        slug = nil
         increment = 0
-        begin
+
+        loop do
           increment += 1
           slug = redis.incrby(slug_counter_key, increment).to_s(RADIX)
-        end while redis.exists(target_url_key(slug))
+          break unless redis.exists(target_url_key(slug))
+        end
 
         slug
       end
@@ -61,11 +64,11 @@ module Urls
     end
 
     def slug_counter_key
-      SLUG_COUNTER_KEY % env
+      format(SLUG_COUNTER_KEY, env)
     end
 
     def target_url_key(slug)
-      TARGET_URL_KEY % [env, to_hex(slug)]
+      format(TARGET_URL_KEY, env, to_hex(slug))
     end
 
     def redis_connection(&block)
