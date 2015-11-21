@@ -10,7 +10,7 @@ describe UrlsController, type: :controller do
     let(:slug) { 'something' }
 
     before do
-      allow(controller).to receive(:repository).and_return(repository)
+      allow(Urls::Repository).to receive(:new).and_return(repository)
     end
 
     it { expect(show).to have_http_status(301) }
