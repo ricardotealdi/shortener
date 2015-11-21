@@ -4,7 +4,7 @@ module Urls
     SLUG_COUNTER_KEY = "#{SHORTENER_PREFIX}:nextslug".freeze
     URL_PREFIX = "#{SHORTENER_PREFIX}:%s".freeze
     TARGET_URL_KEY = "#{URL_PREFIX}:target_url".freeze
-    RADIX = 35
+    RADIX = 16
 
     SlugAlreadyTaken = Class.new(StandardError) do
       def initialize(slug)
