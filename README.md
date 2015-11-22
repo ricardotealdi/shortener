@@ -12,6 +12,7 @@ Basically, it's a small API where you can create your own shortened urls.
     3. [Server](#development-server)
     4. [Console](#development-console)
     5. [Test suite](#test-suite)
+    6. [Docker](#docker)
 2. [API documentation](#api-documentation)
     1. [Create a shortened url](#create-a-shortened-url)
     2. [Fetch a target url from a shortened url](#fetch-a-target-url-from-a-shortened-url)
@@ -71,8 +72,8 @@ And the, to start the containers:
 
 You can also execute the app console and run tests by running the commands:
 
-    $ docker-compose run web bin/rails c # app console
-    $ docker-compose run web bin/rspec # run test suite
+    $ docker-compose run web bin/rails c  # app console
+    $ docker-compose run web bin/rspec    # run test suite
 
 ## API documentation
 
