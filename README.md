@@ -58,6 +58,22 @@ To execute the test suite you need to execute the following command:
 
     $ bin/rspec
 
+### Docker
+
+If you don't want to install all the dependencies in your computer, you might
+use `Docker` to spawn containers. You just need to run the following commands:
+
+    $ docker-compose build
+
+And the, to start the containers:
+
+    $ docker-compose up
+
+You can also execute the app console and run tests by running the commands:
+
+    $ docker-compose run web bin/rails c # app console
+    $ docker-compose run web bin/rspec # run test suite
+
 ## API documentation
 
 ### Create a shortened url
