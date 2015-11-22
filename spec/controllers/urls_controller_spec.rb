@@ -39,7 +39,7 @@ describe UrlsController, type: :controller do
 
       before do
         allow(repository).to receive(:find).and_raise(
-          Urls::Repository::SlugNotFound, slug
+          Errors::SlugNotFound, slug
         )
       end
 
@@ -86,7 +86,7 @@ describe UrlsController, type: :controller do
 
         before do
           allow(repository).to receive(:save).and_raise(
-            Urls::Repository::SlugAlreadyTaken, slug
+            Errors::SlugAlreadyTaken, slug
           )
         end
 

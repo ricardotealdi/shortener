@@ -6,20 +6,6 @@ module Urls
     TARGET_URL_KEY = "#{URL_PREFIX}:target_url".freeze
     RADIX = 16
 
-    SlugAlreadyTaken = Class.new(StandardError) do
-      def initialize(slug)
-        message = "Slug has already been taken: \"#{slug}\""
-        super(message)
-      end
-    end
-
-    SlugNotFound = Class.new(StandardError) do
-      def initialize(slug)
-        message = "Slug has not been found: \"#{slug}\""
-        super(message)
-      end
-    end
-
     def initialize(
       connection_pool: Rails.configuration.redis_pool, env: Rails.env
     )
@@ -30,7 +16,7 @@ module Urls
     def find(slug)
       target_url = fetch_target_url(slug)
 
-      fail(SlugNotFound, slug) unless target_url
+      fail(Errors::SlugNotFound, slug) unless target_url
 
       to_url(slug, target_url)
     end
@@ -38,7 +24,9 @@ module Urls
     def save(target_url:, slug: nil)
       slug = slug.blank? ? next_slug : slug.parameterize
 
-      fail(SlugAlreadyTaken, slug) unless save_target_url(slug, target_url)
+      unless save_target_url(slug, target_url)
+        fail(Errors::SlugAlreadyTaken, slug)
+      end
 
       to_url(slug, target_url)
     end

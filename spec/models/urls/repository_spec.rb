@@ -34,7 +34,7 @@ describe Urls::Repository do
 
     context 'when there isn\'t any url' do
       it 'raises an error' do
-        expect { find }.to raise_error(Urls::Repository::SlugNotFound)
+        expect { find }.to raise_error(Errors::SlugNotFound)
       end
     end
   end
@@ -120,7 +120,7 @@ describe Urls::Repository do
         before { redis_pool.with { |redis| redis.set(redis_key, target_url) } }
 
         it 'raises an error' do
-          expect { save }.to raise_error(Urls::Repository::SlugAlreadyTaken)
+          expect { save }.to raise_error(Errors::SlugAlreadyTaken)
         end
       end
     end
