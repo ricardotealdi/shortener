@@ -3,6 +3,10 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery(with: :null_session)
 
+  rescue_from(Errors::InvalidUrl) do |exception|
+    handle_error(exception, :bad_request)
+  end
+
   rescue_from(Errors::SlugNotFound) do |exception|
     handle_error(exception, :not_found)
   end

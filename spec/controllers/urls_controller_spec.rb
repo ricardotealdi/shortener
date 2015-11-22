@@ -68,6 +68,20 @@ describe UrlsController, type: :controller do
     it { expect(create.location).to eq(expected_url) }
     it { expect(create.body).to eq(expected_json) }
 
+    context 'when the target url is not a valid url' do
+      let(:target_url) { nil }
+      let(:expected_json) do
+        {
+          error: {
+            message: "Invalid target url: \"#{target_url}\""
+          }
+        }.to_json
+      end
+
+      it { is_expected.to have_http_status(400) }
+      it { expect(create.body).to eq(expected_json) }
+    end
+
     context 'when the max attempt of finding the next slug has been reached' do
       let(:expected_json) do
         {

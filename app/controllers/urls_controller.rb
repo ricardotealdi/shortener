@@ -1,4 +1,6 @@
 class UrlsController < ApplicationController
+  before_action(only: :create) { Urls::Validator.new(create_params).validate }
+
   def show
     slug = params.require(:slug).to_s.strip
 
