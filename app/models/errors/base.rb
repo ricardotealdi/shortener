@@ -2,8 +2,8 @@ module Errors
   class Base < StandardError
     attr_reader :message
 
-    def initialize(message)
-      @message = message.dup
+    def initialize(message = nil)
+      @message = message
     end
   end
 end

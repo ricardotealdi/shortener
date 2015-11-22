@@ -11,6 +11,10 @@ class ApplicationController < ActionController::Base
     handle_error(exception, :conflict)
   end
 
+  rescue_from(Errors::MaxAttemptToFindSlug) do |exception|
+    handle_error(exception, :internal_server_error)
+  end
+
   private
 
   def handle_error(exception, status)

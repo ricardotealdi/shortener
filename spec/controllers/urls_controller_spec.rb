@@ -68,6 +68,25 @@ describe UrlsController, type: :controller do
     it { expect(create.location).to eq(expected_url) }
     it { expect(create.body).to eq(expected_json) }
 
+    context 'when the max attempt of finding the next slug has been reached' do
+      let(:expected_json) do
+        {
+          error: {
+            message: 'Max attempts reached to find available slug: 10'
+          }
+        }.to_json
+      end
+
+      before do
+        allow(repository).to receive(:save).and_raise(
+          Errors::MaxAttemptToFindSlug, 10
+        )
+      end
+
+      it { is_expected.to have_http_status(500) }
+      it { expect(create.body).to eq(expected_json) }
+    end
+
     context 'when a slug is sent' do
       let(:params) { { target_url: target_url, slug: slug } }
 

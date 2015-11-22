@@ -45,7 +45,8 @@ describe Urls::Repository do
     let(:target_url) { 'http://domain.tld' }
     let(:slug_counter_key) { 'shortener:test:url:nextslug' }
     let(:hex_slug) { slug.unpack('H*').first }
-    let(:redis_key) { "shortener:test:url:#{hex_slug}:target_url" }
+    let(:redis_key_pattern) { "shortener:test:url:%s:target_url" }
+    let(:redis_key) { format(redis_key_pattern, hex_slug) }
     let(:expected_hex_slug) { expected_slug.unpack('H*').first }
     let(:expected_redis_key) do
       "shortener:test:url:#{expected_hex_slug}:target_url"
@@ -92,6 +93,27 @@ describe Urls::Repository do
         it 'creates a slug' do
           expect { save }.to change(&expected_target_url).
             from(nil).to(target_url)
+        end
+
+        context 'and it reaches the number of max attempts' do
+          before do
+            redis_pool.with do |redis|
+              slug = 0
+              (1..10).each do |attempt|
+                slug += attempt
+                hex_slug = slug.to_s(16).unpack('H*').first
+                redis_key = format(redis_key_pattern, hex_slug)
+                redis.set(redis_key, target_url)
+              end
+            end
+          end
+
+          it 'raises a MaxAttemptToFindSlug' do
+            expect { save }.to raise_error(
+              Errors::MaxAttemptToFindSlug,
+              'Max attempts reached to find available slug: 11'
+            )
+          end
         end
       end
     end

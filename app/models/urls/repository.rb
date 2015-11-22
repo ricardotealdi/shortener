@@ -43,25 +43,30 @@ module Urls
       Url.new(slug, target_url)
     end
 
+    def next_slug
+      redis_connection(&method(:fetch_next_slug))
+    end
+
     def fetch_target_url(slug)
       redis_connection do |redis|
         redis.get(target_url_key(slug))
       end
     end
 
-    def next_slug
-      redis_connection do |redis|
-        slug = nil
-        increment = 0
+    def fetch_next_slug(redis)
+      slug = nil
+      increment = 0
 
-        loop do
-          increment += 1
-          slug = redis.incrby(slug_counter_key, increment).to_s(RADIX)
-          break unless redis.exists(target_url_key(slug))
-        end
+      loop do
+        increment += 1
 
-        slug
+        fail(Errors::MaxAttemptToFindSlug, increment) if increment > 10
+
+        slug = redis.incrby(slug_counter_key, increment).to_s(RADIX)
+        break unless redis.exists(target_url_key(slug))
       end
+
+      slug
     end
 
     def save_target_url(slug, target_url)
