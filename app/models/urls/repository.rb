@@ -13,6 +13,13 @@ module Urls
       end
     end
 
+    SlugNotFound = Class.new(StandardError) do
+      def initialize(slug)
+        message = "Slug has not been found: \"#{slug}\""
+        super(message)
+      end
+    end
+
     def initialize(
       connection_pool: Rails.configuration.redis_pool, env: Rails.env
     )
@@ -22,7 +29,10 @@ module Urls
 
     def find(slug)
       target_url = fetch_target_url(slug)
-      target_url && to_url(slug, target_url)
+
+      fail(SlugNotFound, slug) unless target_url
+
+      to_url(slug, target_url)
     end
 
     def save(target_url:, slug: nil)

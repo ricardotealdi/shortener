@@ -29,11 +29,23 @@ describe UrlsController, type: :controller do
     end
 
     context 'when the url wasn\'t found for the given slug' do
-      let(:url) { nil }
+      let(:expected_json) do
+        {
+          error: {
+            message: "Slug has not been found: \"#{slug}\""
+          }
+        }.to_json
+      end
+
+      before do
+        allow(repository).to receive(:find).and_raise(
+          Urls::Repository::SlugNotFound, slug
+        )
+      end
 
       it { expect(show).to have_http_status(404) }
       it { expect(show).to_not redirect_to(target_url) }
-      it { expect(show.body).to eq('') }
+      it { expect(show.body).to eq(expected_json) }
     end
   end
 

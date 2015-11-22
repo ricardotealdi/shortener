@@ -33,7 +33,9 @@ describe Urls::Repository do
     end
 
     context 'when there isn\'t any url' do
-      it { is_expected.to be(nil) }
+      it 'raises an error' do
+        expect { find }.to raise_error(Urls::Repository::SlugNotFound)
+      end
     end
   end
 
