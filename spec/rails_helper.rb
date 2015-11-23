@@ -1,5 +1,6 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
+ENV['REDIS_URL'] ||= 'redis://127.0.0.1:6379/1'
 
 require 'simplecov'
 SimpleCov.start 'rails'

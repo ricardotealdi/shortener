@@ -1,16 +1,15 @@
 module Urls
   class Repository
-    SHORTENER_PREFIX = 'shortener:%s:url'.freeze
+    SHORTENER_PREFIX = 'shortener:url'.freeze
     SLUG_COUNTER_KEY = "#{SHORTENER_PREFIX}:nextslug".freeze
     URL_PREFIX = "#{SHORTENER_PREFIX}:%s".freeze
     TARGET_URL_KEY = "#{URL_PREFIX}:target_url".freeze
     RADIX = 16
 
     def initialize(
-      connection_pool: Rails.configuration.redis_pool, env: Rails.env
+      connection_pool: Rails.configuration.redis_pool
     )
       @connection_pool = connection_pool
-      @env = env
     end
 
     def find(slug)
@@ -33,7 +32,7 @@ module Urls
 
     private
 
-    attr_reader :connection_pool, :env
+    attr_reader :connection_pool
 
     def to_hex(slug)
       slug.to_s.unpack('H*').first
@@ -62,7 +61,7 @@ module Urls
 
         fail(Errors::MaxAttemptToFindSlug, increment) if increment > 10
 
-        slug = redis.incrby(slug_counter_key, increment).to_s(RADIX)
+        slug = redis.incrby(SLUG_COUNTER_KEY, increment).to_s(RADIX)
         break unless redis.exists(target_url_key(slug))
       end
 
@@ -75,12 +74,8 @@ module Urls
       end
     end
 
-    def slug_counter_key
-      format(SLUG_COUNTER_KEY, env)
-    end
-
     def target_url_key(slug)
-      format(TARGET_URL_KEY, env, to_hex(slug))
+      format(TARGET_URL_KEY, to_hex(slug))
     end
 
     def redis_connection(&block)

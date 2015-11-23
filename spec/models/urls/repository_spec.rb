@@ -5,7 +5,7 @@ describe Urls::Repository do
 
   after do
     redis_pool.with do |redis|
-      keys = redis.keys('shortener:test:*')
+      keys = redis.keys('shortener:*')
       redis.del(keys) unless keys.blank?
     end
   end
@@ -16,7 +16,7 @@ describe Urls::Repository do
     let(:slug) { 'a-slug' }
     let(:target_url) { 'http://domain.tld' }
     let(:hex_slug) { slug.unpack('H*').first }
-    let(:redis_key) { "shortener:test:url:#{hex_slug}:target_url" }
+    let(:redis_key) { "shortener:url:#{hex_slug}:target_url" }
 
     context 'when there is a url' do
       before { redis_pool.with { |redis| redis.set(redis_key, target_url) } }
@@ -43,13 +43,13 @@ describe Urls::Repository do
     subject(:save) { repository.save(target_url: target_url, slug: slug) }
 
     let(:target_url) { 'http://domain.tld' }
-    let(:slug_counter_key) { 'shortener:test:url:nextslug' }
+    let(:slug_counter_key) { 'shortener:url:nextslug' }
     let(:hex_slug) { slug.unpack('H*').first }
-    let(:redis_key_pattern) { "shortener:test:url:%s:target_url" }
+    let(:redis_key_pattern) { "shortener:url:%s:target_url" }
     let(:redis_key) { format(redis_key_pattern, hex_slug) }
     let(:expected_hex_slug) { expected_slug.unpack('H*').first }
     let(:expected_redis_key) do
-      "shortener:test:url:#{expected_hex_slug}:target_url"
+      "shortener:url:#{expected_hex_slug}:target_url"
     end
 
     let(:expected_target_url) do
