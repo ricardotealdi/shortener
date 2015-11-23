@@ -6,12 +6,36 @@ module Urls
     TARGET_URL_KEY = "#{URL_PREFIX}:target_url".freeze
     RADIX = 16
 
+    ##
+    # Class initialization
+    #
+    # params:
+    #   connection_pool - It's the redis connection pool. It needs to be a
+    #                     connection pool instead of a normal connection,
+    #                     because it's using a multi-thread app server
+    #                     (puma), in other words, it's important not to share
+    #                     connections between threads. The number of connections
+    #                     in the pool should be the same or bigger than the
+    #                     number of spawned threads of the app server, because
+    #                     if you try to use more connections than are available,
+    #                     the connection pool will block and wait for an
+    #                     available connection from the pool and it may cause
+    #                     queuing of some HTTP requests.
+    #
     def initialize(
       connection_pool: Rails.configuration.redis_pool
     )
       @connection_pool = connection_pool
     end
 
+    ##
+    # Finds a target url
+    #
+    # params:
+    #   slug - It's the "id" of the target url
+    #
+    # @return Url
+    #
     def find(slug)
       target_url = fetch_target_url(slug)
 
@@ -20,6 +44,18 @@ module Urls
       to_url(slug, target_url)
     end
 
+    ##
+    # Saves a new shortened url
+    #
+    # params:
+    #   target_url - Required. This is the target url.
+    #   slug - It's the "id" of the target url
+    #          (or the short version of target url).
+    #          If provided, it will be used, otherwise it will be generated
+    #          as an hex number based on the counter 'shortener:nextslug'
+    #
+    # @return Url
+    #
     def save(target_url:, slug: nil)
       slug = slug.blank? ? next_slug : slug.parameterize
 
